@@ -3,12 +3,12 @@ import './styles.less';
 
 import {Button} from 'components/ui/Button';
 
-const TaskItem: FC<TaskItemProps> = ({ title, onClick }) => {
+const TaskItem: FC<TaskItemProps> = ({ title, dueDate, onClick }) => {
   return (
     <div className="item" onClick={onClick}>
         <div className="title">{title}</div>
         <div className="right">
-          <div className="due-date">2.10.2022</div>
+          <div className="due-date">{dueDate}</div>
           <Button isRed>Delete</Button>
           <Button>Edit</Button>
         </div> 
@@ -19,7 +19,9 @@ const TaskItem: FC<TaskItemProps> = ({ title, onClick }) => {
 export default TaskItem;
 
 type TaskItemProps = {
+  id: number;
   title: string;
+  dueDate: string;
   onClick: () => void;
 }
 

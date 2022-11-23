@@ -10,6 +10,10 @@ function App() {
   const openModal = () => setIsPopupOpened(true);
   const closeModal = () => setIsPopupOpened(false);
 
+  const tasks = [{id: 0, title: 'First title', description: 'Description', dueDate: '12.11.2236'},
+                 {id: 1, title: 'Second title', description: 'Description', dueDate: '12.12.1917'},
+                 {id: 2, title: 'Third title', description: 'Description', dueDate: '17.01.2010'},
+                ]
   return (
     <>
     <div className="wrapper">
@@ -17,15 +21,18 @@ function App() {
         <div>Tasks</div>
         <Button>+ Add Task</Button>
       </div>
-      {}
-      <TaskItem title="Task title" onClick={openModal}/>
-      <TaskItem title="Task title 2" onClick={openModal}/>
-      <TaskItem title="Task title 3" onClick={openModal}/>
+      {tasks.map((task) => (
+        <TaskItem 
+          key={task.id} 
+          id={task.id} 
+          title={task.title} 
+          dueDate={task.dueDate} 
+          onClick={openModal}
+        />
+      ))}
     </div>
     <TaskPopup isVisible={isPopupOpened} closeModal={closeModal}/>
     </>
-
-
   );
 }
 
