@@ -17,6 +17,7 @@ function App() {
         <div>Tasks</div>
         <Button>+ Add Task</Button>
       </div>
+      {}
       <TaskItem title="Task title" onClick={openModal}/>
       <TaskItem title="Task title 2" onClick={openModal}/>
       <TaskItem title="Task title 3" onClick={openModal}/>

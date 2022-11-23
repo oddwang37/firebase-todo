@@ -6,9 +6,7 @@ const Overlay:FC<OverlayProps> = ({children, isVisible}) => {
 		<>
 		  {isVisible 
 		  	?(<div className="overlay">
-			  <div className="modal">
 			  	{children}
-			  </div>
 			</div>)
 			:null}
 		</>
