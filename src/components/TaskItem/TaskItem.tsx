@@ -3,9 +3,9 @@ import './styles.less';
 
 import {Button} from 'components/ui/Button';
 
-const TaskItem: FC<TaskItemProps> = ({ title }) => {
+const TaskItem: FC<TaskItemProps> = ({ title, onClick }) => {
   return (
-    <div className="item">
+    <div className="item" onClick={onClick}>
         <div className="title">{title}</div>
         <div className="right">
           <div className="due-date">2.10.2022</div>
@@ -19,14 +19,7 @@ const TaskItem: FC<TaskItemProps> = ({ title }) => {
 export default TaskItem;
 
 type TaskItemProps = {
-  title: string
+  title: string;
+  onClick: () => void;
 }
 
-/* - создание, просмотр, редактирование (изменение полей или то, что задача выполнена) и     удаление задачи
-- возможность прикрепления файлов к записи
-- поля в задаче: заголовок, описание, дата завершения, прикрепленные файлы
-- если дата завершения истекла или задача выполнена, это должно быть визуально отмечено  */
-
-// название дата  edit delete 
-
-// открываешь и заголовок описание прикрепить дата

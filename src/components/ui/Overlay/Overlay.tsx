@@ -1,12 +1,20 @@
 import { FC, PropsWithChildren } from 'react';
 import './styles.less';
 
-const Overlay:FC<PropsWithChildren<{}>> = ({children}) => {
+const Overlay:FC<OverlayProps> = ({children, isVisible}) => {
 	return (
-		<div className="overlay">
-			{children}
-		</div>
+		<>
+		  {isVisible 
+		  	?(<div className="overlay">
+			  <div className="modal">
+			  	{children}
+			  </div>
+			</div>)
+			:null}
+		</>
 	)
 }
 
 export default Overlay
+
+type OverlayProps = PropsWithChildren<{isVisible: boolean}>
