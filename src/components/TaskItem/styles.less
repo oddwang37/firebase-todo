@@ -1,0 +1,24 @@
+.item {
+  background-color: #fff;
+  border: 1px solid #e5e5e5;
+  padding: 10px 15px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+  &:hover {
+    background-color: rgb(231, 231, 231);
+  }
+  &:active {
+    background-color: rgb(192, 192, 192);
+  }
+  .right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .due-date {
+    color: #8c8c8c;
+  }
+}
