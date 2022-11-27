@@ -1,9 +1,16 @@
+export type AttachedFile = {
+	url: string, 
+	name: string, 
+	contentType?: string, 
+	fullPath: string
+}
+
 export type Task = {
 	title: string;
 	description: string;
 	dueDate: string;
 	id: string;
-	attachedFiles: [];
+	attachedFiles: AttachedFile[];
 }
 
 export type TasksListActions = {
@@ -15,4 +22,5 @@ export type TasksListActions = {
 export type TaskPopupActions = {
     editTitle: (id: string, title: string) => void;
     editDescription: (id: string, description: string) => void;
+    uploadFile: (file: File) => void;
 }

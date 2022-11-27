@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './App.less';
-import { ref, onValue, set, push, query, orderByChild, remove, update } from 'firebase/database';
+import { ref, onValue, set, push, query, orderByChild, remove, update, off } from 'firebase/database';
+import { ref as storageRef, uploadBytes, listAll, getDownloadURL, deleteObject } from 'firebase/storage';
 import { v4 as uuid } from 'uuid';
 import dayjs from 'dayjs';
 
-import { database as db } from './firebase/initialize';
+import { database as db, storage } from './firebase/initialize';
 import { getTodos } from './firebase/todos';
-import { Task, TasksListActions, TaskPopupActions } from 'types/tasks';
+import { Task, TasksListActions, TaskPopupActions, AttachedFile } from 'types/tasks';
 
 import { TaskItem, Button, TaskPopup, AddTaskPopup, Spinner } from 'components';
 
@@ -16,6 +17,7 @@ function App() {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [isTaskOpened, setIsTaskOpened] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [imageList, setImageList] = useState([]);
 
   const openTask = () => setIsTaskOpened(true);
   const closeTask = () => setIsTaskOpened(false);
@@ -47,21 +49,31 @@ function App() {
     });
   }, []);
 
+  /*useEffect(() => {
+    const attachedFilesRef = ref(db, `todos/${popupTaskInfo.id}/attachedFiles`);
+    onValue(attachedFilesRef, (snapshot) => {
+      const attachedFiles: AttachedFile[] = [];
+      snapshot.forEach((childSnap) => {
+        attachedFiles.push(childSnap.val());
+      });
+      const newTasks = tasks.map((task) => {
+        if (task.id === popupTaskInfo.id) {
+          return {...task, attachedFiles};
+        } else return task
+      })
+      setTasks(newTasks);
+    });
+  }, [popupTaskInfo])
+  */
+
 
   const createTask = (title: string, date: string) => {
     setIsLoading(true);
     const taskId = uuid();
     const dueDate = dayjs(date).toISOString();
-    /*
-    set(ref(db, 'todos/' + taskId), {
-      title,
-      description: '',
-      dueDate,
-      attachedFiles: [],
-    }); */
-    const postListRef = ref(db, 'todos/');
-    const newPostRef = push(postListRef);
-    set(newPostRef, {
+    const tasksListRef = ref(db, 'todos/');
+    const newTaskRef = push(tasksListRef);
+    set(newTaskRef, {
       title,
       description: '',
       dueDate,
@@ -95,6 +107,48 @@ function App() {
     }
   }
 
+  const attachFile = (file: AttachedFile) => {
+    const filesListRef = ref(db, `todos/${popupTaskInfo.id}/attachedFiles`);
+    const newFileRef = push(filesListRef);
+    set(newFileRef, file)
+    .then((snap) => {
+      console.log(snap);
+      const newTasks = tasks.map((task) => {
+        if (task.id === popupTaskInfo.id) {
+          let newAttachments;
+          if (task.attachedFiles) {
+            newAttachments = {...task.attachedFiles, file};
+          } else {
+            newAttachments = [file];
+          }
+            console.log(newAttachments);
+            return {...task, attachedFiles: newAttachments};
+        } else return task
+      })
+      setTasks(newTasks);
+      changePopupTask(popupTaskInfo.id);
+    })
+    }
+
+  const uploadFile = async (file: File) => {
+    if (file) {
+      const fileRef = storageRef(storage, `files/${popupTaskInfo.id}/${file.name}`);
+      const snapshot = await uploadBytes(fileRef, file);
+      if (snapshot) {
+        const { metadata: {name, contentType, fullPath}} = snapshot;
+        const url = await getDownloadURL(snapshot.ref);
+        if (url) {
+          if (contentType) {
+            await attachFile({url, name, contentType, fullPath});
+          } else {
+            await attachFile({url, name, fullPath});
+          }
+        }
+      }
+    }
+  }
+
+
   const tasksListActions: TasksListActions = {
     deleteTask,
     editTitle,
@@ -104,6 +158,7 @@ function App() {
   const taskPopupActions: TaskPopupActions = {
     editTitle,
     editDescription,
+    uploadFile,
   }
 
   const Content = () => {
