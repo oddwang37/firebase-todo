@@ -1,10 +1,11 @@
 import { FC, useState, useEffect } from 'react';
 import './styles.less';
 
+import dates from 'services/dates';
+
 import { Input } from 'components/ui/Input';
 import { Button } from 'components/ui/Button';
 import { Overlay } from 'components/ui/Overlay';
-import dayjs from 'dayjs';
 
 const AddTaskPopup: FC<AddTaskPopupProps> = ({ isVisible, closeModal, addTask }) => {
   const [inputValue, setInputValue] = useState<string>('');
@@ -29,7 +30,7 @@ const AddTaskPopup: FC<AddTaskPopupProps> = ({ isVisible, closeModal, addTask })
   };
 
   const getNow = () => {
-    return dayjs().format('YYYY-MM-DD');
+    return dates.format(Date.now(), 'YYYY-MM-DD');
   };
 
   return (

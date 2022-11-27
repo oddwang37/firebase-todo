@@ -1,11 +1,12 @@
 import React, { FC, useRef, useState } from 'react';
 import './styles.less';
-import dayjs from 'dayjs';
+
+import dates from 'services/dates';
 
 import { Button } from 'components/ui/Button';
 import { Task, TasksListActions } from 'types/tasks';
 
-const TaskItem: FC<TaskItemProps> = ({ id, title, dueDate, onClick, tasksListActions }) => {
+const TaskItem: FC<TaskItemProps> = ({ id, title, dueDate, openTask, tasksListActions }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [inputTitle, setInputTitle] = useState<string>(title);
   const [isTitleEditable, setIsTitleEditable] = useState<boolean>(false);
@@ -14,8 +15,12 @@ const TaskItem: FC<TaskItemProps> = ({ id, title, dueDate, onClick, tasksListAct
     setInputTitle(e.target.value);
   }
 
-  const {deleteTask, editTitle} = tasksListActions;
+  const {deleteTask, editTitle, changePopupTask} = tasksListActions;
 
+  const onClick = () => {
+    changePopupTask(id);
+    openTask();
+  }
   const onClickDelete = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
     deleteTask(id);
@@ -25,6 +30,7 @@ const TaskItem: FC<TaskItemProps> = ({ id, title, dueDate, onClick, tasksListAct
     e.stopPropagation();
     if (isTitleEditable) {
         editTitle(id, inputTitle);
+        setIsTitleEditable(false);
     } else {
         setIsTitleEditable(true);
         if (inputRef.current) {
@@ -37,15 +43,12 @@ const TaskItem: FC<TaskItemProps> = ({ id, title, dueDate, onClick, tasksListAct
     e.stopPropagation();
   }
 
-  const formatDate = () => {
-   return dayjs(dueDate).format('DD.MM.YYYY');
-  }
-
   return (
     <div className="item" onClick={onClick}>
-      <input className="title-input" onClick={onClickInput} ref={inputRef} value={inputTitle} onChange={onChange} />
+      <input className="title-input" onClick={onClickInput} ref={inputRef} value={inputTitle} onChange={onChange} readOnly={!isTitleEditable} />
       <div className="right">
-        <div className="due-date">{formatDate()}</div>
+        {isTitleEditable && <div className="edit-message">Enter title name and click on save button</div>}
+        <div className="due-date">{dates.format(dueDate, 'DD.MM.YYYY')}</div>
         <Button onClick={onClickDelete} isRed>Delete</Button>
         <Button onClick={onClickEditButton}>{isTitleEditable ? 'Save' : 'Edit'}</Button>
       </div>
@@ -59,6 +62,6 @@ type TaskItemProps = {
   id: string;
   title: string;
   dueDate: string;
-  onClick: () => void;
+  openTask: () => void;
   tasksListActions: TasksListActions;
 };

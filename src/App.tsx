@@ -6,12 +6,13 @@ import dayjs from 'dayjs';
 
 import { database as db } from './firebase/initialize';
 import { getTodos } from './firebase/todos';
-import { Task, TasksListActions } from 'types/tasks';
+import { Task, TasksListActions, TaskPopupActions } from 'types/tasks';
 
 import { TaskItem, Button, TaskPopup, AddTaskPopup, Spinner } from 'components';
 
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [popupTaskInfo, setPopupTaskInfo] = useState<Task>({id: '0', title: 'Title', description: 'D', dueDate: '01.01.1970', attachedFiles: []});
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [isTaskOpened, setIsTaskOpened] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -82,9 +83,27 @@ function App() {
     update(taskRef, {title});
   }
 
+  const editDescription = (id: string, description: string) => {
+    const taskRef = ref(db, 'todos/' + id);
+    update(taskRef, {description});
+  }
+
+  const changePopupTask = (id: string) => {
+    const task = tasks.find((task) => task.id === id);
+    if (task) {
+      setPopupTaskInfo(task);
+    }
+  }
+
   const tasksListActions: TasksListActions = {
     deleteTask,
     editTitle,
+    changePopupTask
+  }
+
+  const taskPopupActions: TaskPopupActions = {
+    editTitle,
+    editDescription,
   }
 
   const Content = () => {
@@ -101,7 +120,7 @@ function App() {
                 id={task.id}
                 title={task.title}
                 dueDate={task.dueDate}
-                onClick={openTask}
+                openTask={openTask}
                 tasksListActions={tasksListActions}
               />
             ))}
@@ -121,7 +140,7 @@ function App() {
         </div>
         <Content />
       </div>
-      <TaskPopup isVisible={isTaskOpened} closeModal={closeTask} />
+      <TaskPopup task={popupTaskInfo} taskPopupActions={taskPopupActions} isVisible={isTaskOpened} closeModal={closeTask} />
       <AddTaskPopup isVisible={isAddTaskOpened} closeModal={closeAddTask} addTask={createTask} />
     </>
   );
