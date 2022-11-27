@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import './App.less';
-import { ref, onValue, set, push } from 'firebase/database';
+import { ref, onValue, set, push, query, orderByChild, remove, update } from 'firebase/database';
 import { v4 as uuid } from 'uuid';
 import dayjs from 'dayjs';
 
 import { database as db } from './firebase/initialize';
 import { getTodos } from './firebase/todos';
+import { Task, TasksListActions } from 'types/tasks';
 
 import { TaskItem, Button, TaskPopup, AddTaskPopup, Spinner } from 'components';
 
 function App() {
-  const [tasks, setTasks] = useState<any>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [isTaskOpened, setIsTaskOpened] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -36,18 +37,15 @@ function App() {
         console.error(error);
       });
     const tasksRef = ref(db, 'todos/');
-    onValue(tasksRef, (snapshot) => {
-      const data = snapshot.val();
-      const tasksArr: any = [];
-      if (data) {
-        console.log(Object.values(data), 'data');
-        Object.values(data).forEach((task) => {
-          tasksArr.push(task);
-        });
-      }
+    onValue(query(tasksRef, orderByChild('dueDate')), (snapshot) => {
+      const tasksArr: Task[] = [];
+      snapshot.forEach((childSnap) => {
+        tasksArr.push({...childSnap.val(), id: childSnap.key});
+      });
       setTasks(tasksArr);
     });
   }, []);
+
 
   const createTask = (title: string, date: string) => {
     setIsLoading(true);
@@ -74,6 +72,43 @@ function App() {
       });
   };
 
+  const deleteTask = (id: string) => {
+    const taskRef = ref(db, 'todos/' + id);
+    remove(taskRef);
+  }
+
+  const editTitle = (id: string, title: string) => {
+    const taskRef = ref(db, 'todos/' + id);
+    update(taskRef, {title});
+  }
+
+  const tasksListActions: TasksListActions = {
+    deleteTask,
+    editTitle,
+  }
+
+  const Content = () => {
+    if (isLoading) {
+      return <Spinner />
+    }
+    if (tasks.length === 0) {
+      return <div className="no-tasks-placeholder">You have no tasks :(</div>
+    } else {
+      return (<div className="content">
+            {tasks.map((task: any) => (
+              <TaskItem
+                key={task.id}
+                id={task.id}
+                title={task.title}
+                dueDate={task.dueDate}
+                onClick={openTask}
+                tasksListActions={tasksListActions}
+              />
+            ))}
+          </div>)
+    }
+  }
+
   return (
     <>
       <div className="wrapper">
@@ -84,21 +119,7 @@ function App() {
           <Button onClick={openAddTask}>+ Add Task</Button>
         </div>
         </div>
-        {isLoading ? (
-          <Spinner />
-        ) : (
-          <div className="content">
-            {tasks.map((task: any) => (
-              <TaskItem
-                key={task.id}
-                id={task.id}
-                title={task.title}
-                dueDate={task.dueDate}
-                onClick={openTask}
-              />
-            ))}
-          </div>
-        )}
+        <Content />
       </div>
       <TaskPopup isVisible={isTaskOpened} closeModal={closeTask} />
       <AddTaskPopup isVisible={isAddTaskOpened} closeModal={closeAddTask} addTask={createTask} />

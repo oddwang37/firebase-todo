@@ -14,6 +14,7 @@ export const createTask = (title: string, date: string) => {
     dueDate,
     attachedFiles: [],
   }); */
+  /*
   const postListRef = ref(db, 'todos/');
   const newPostRef = push(postListRef);
   set(newPostRef, {
@@ -22,9 +23,11 @@ export const createTask = (title: string, date: string) => {
     dueDate,
     attachedFiles: [],
   }).then(() => console.log('done'));
+  */
 };
 
 export const getTodos = () => {
   const dbRef = ref(db);
   return get(child(dbRef, 'todos'));
 };
+
