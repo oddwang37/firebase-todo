@@ -1,0 +1,87 @@
+.modal {
+  width: 60vw;
+  height: 70vh;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 40px 40px 50px 40px;
+  position: relative;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  overflow-y: scroll;
+  .close {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    color: rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+  }
+  .heading {
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.8);
+    margin-top: 10px;
+    margin-bottom: 15px;
+  }
+  .title-input {
+    font-size: 18px;
+    border: none;
+    font-family: Arial, Helvetica, sans-serif;
+    width: 100%;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.8);
+  }
+  .due-date {
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 14px;
+    margin-top: 10px;
+  }
+  .red {
+    color: red;
+  }
+  .done-text {
+    color: green;
+  }
+  .textarea {
+    resize: none;
+    height: 120px;
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    padding: 10px 15px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    &:focus {
+      outline: 1px solid #000;
+    }
+  }
+  .upload-files-wrapper {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+  }
+  .upload-files-label {
+    width: 150px;
+    display: block;
+    border-radius: 5px;
+    padding: 5px 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+    border: 2px solid #33cc33;
+    color: #33cc33;
+    cursor: pointer;
+    &:hover {
+      outline: 2px solid #33cc33;
+    }
+  }
+  .upload-files-button {
+    opacity: 0;
+    position: absolute;
+    display: block;
+  }
+  .attached-files {
+    margin-top: 15px;
+    width: 100%;
+  }
+}
