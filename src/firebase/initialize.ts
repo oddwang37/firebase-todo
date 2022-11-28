@@ -1,13 +1,6 @@
-// Import the functions you need from the SDKs you need
-
 import { initializeApp } from 'firebase/app';
 import { getDatabase } from 'firebase/database';
-
-// TODO: Add SDKs for Firebase products that you want to use
-
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
+import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyBkznL7104UbDkgZWHB30Mk9-nzmj2yiIQ',
@@ -25,8 +18,8 @@ const firebaseConfig = {
   databaseURL: 'https://todo-24aa6-default-rtdb.europe-west1.firebasedatabase.app/',
 };
 
-// Initialize Firebase
-
 const app = initializeApp(firebaseConfig);
+
+export const storage = getStorage(app);
 
 export const database = getDatabase(app);
