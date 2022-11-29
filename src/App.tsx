@@ -16,7 +16,7 @@ import { Task, TasksListActions, TaskPopupActions, AttachedFile } from 'types/ta
 
 import { TaskItem, Button, TaskPopup, AddTaskPopup } from 'components';
 
-function App() {
+const App = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   /**
    * Represent info of task which displays in task popup
@@ -28,7 +28,7 @@ function App() {
     description: 'D',
     isDone: false,
     dueDate: '01.01.1970',
-    attachedFiles: [],
+    attachedFiles: {},
   });
   const [isTaskOpened, setIsTaskOpened] = useState<boolean>(false);
 
@@ -47,22 +47,11 @@ function App() {
     onValue(query(tasksRef, orderByChild('dueDate')), (snapshot) => {
       const tasksArr: Task[] = [];
       snapshot.forEach((childSnap) => {
-        // Transform objects to arrays
-        const attachedFiles = childSnap.val().attachedFiles as any;
-        if (attachedFiles) {
-          let filesArr: AttachedFile[] = [];
-          for (let key in attachedFiles) {
-            filesArr.push({ ...attachedFiles[key], id: key });
-          }
-          tasksArr.push({ id: childSnap.key, ...childSnap.val(), attachedFiles: attachedFiles });
-        } else {
-          tasksArr.push({ id: childSnap.key, ...childSnap.val(), attachedFiles: attachedFiles });
-        }
+        tasksArr.push({ id: childSnap.key, ...childSnap.val()});
       });
       setTasks(tasksArr);
     });
   }, []);
-
   /**
    * Finds task by id and setting it to state for displaying task in popup
    * @param {string} id - task id
@@ -73,6 +62,7 @@ function App() {
       setPopupTaskInfo(task);
     }
   };
+
   /**
    * Attaches file to task opened in popup and updates state
    * @param {AttachedFile} file - Passed file
@@ -82,13 +72,13 @@ function App() {
     const newFileRef = push(filesListRef);
     const newFileKey = newFileRef.key as string;
     set(newFileRef, file).then((snap) => {
-      let newFile = { ...file, id: newFileKey };
+      const newFile = {...file, id: newFileKey};
       let newPopupTask;
-      if (popupTaskInfo.attachedFiles) {
-        const newAttachedFiles = [...popupTaskInfo.attachedFiles, newFile];
-        newPopupTask = { ...popupTaskInfo, attachedFiles: newAttachedFiles };
+      if (!popupTaskInfo.attachedFiles || Object.keys(popupTaskInfo.attachedFiles).length === 0) {
+        newPopupTask = { ...popupTaskInfo, attachedFiles: {[newFileKey]: newFile} };
       } else {
-        newPopupTask = { ...popupTaskInfo, attachedFiles: [newFile] };
+        const newAttachedFiles = {...popupTaskInfo.attachedFiles, [newFileKey]: newFile}
+        newPopupTask = { ...popupTaskInfo, attachedFiles: newAttachedFiles };
       }
       setPopupTaskInfo(newPopupTask);
     });
@@ -133,7 +123,7 @@ function App() {
   };
 
   return (
-    <>
+    <div className="App">
       <div className="wrapper">
         <div className="header">
           <div>Title</div>
@@ -167,7 +157,7 @@ function App() {
         closeModal={closeTask}
       />
       <AddTaskPopup isVisible={isAddTaskOpened} closeModal={closeAddTask} addTask={createTask} />
-    </>
+    </div>
   );
 }
 

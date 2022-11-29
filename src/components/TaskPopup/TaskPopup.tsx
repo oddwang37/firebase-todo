@@ -93,8 +93,7 @@ const TaskPopup: FC<TaskPopupProps> = ({ task, taskPopupActions, isVisible, clos
           <div className="attached-files">
             {Object.values(task.attachedFiles)
               .reverse()
-              .map((file) => {
-                return (
+              .map((file) => (
                   <FileItem
                     key={file.id}
                     url={file.url}
@@ -102,8 +101,7 @@ const TaskPopup: FC<TaskPopupProps> = ({ task, taskPopupActions, isVisible, clos
                     contentType={file.contentType}
                     fullPath={file.fullPath}
                   />
-                );
-              })}
+              ))}
           </div>
         )}
       </div>

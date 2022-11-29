@@ -12,7 +12,7 @@ export type Task = {
 	isDone: boolean;
 	dueDate: string;
 	id: string;
-	attachedFiles: AttachedFile[];
+	attachedFiles: Record<string, AttachedFile>
 }
 
 export type TasksListActions = {

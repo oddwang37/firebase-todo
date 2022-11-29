@@ -8,6 +8,19 @@ export const getTodos = () => {
   return get(child(dbRef, 'todos'));
 };
 
+export const createTask = (title: string, date: string) => {
+  const dueDate = dates.toISO(date);
+  const tasksListRef = ref(db, 'todos/');
+  const newTaskRef = push(tasksListRef);
+  set(newTaskRef, {
+    title,
+    description: '',
+    isDone: false,
+    dueDate,
+    attachedFiles: [],
+  });
+};
+
 export const deleteTask = (id: string) => {
   const taskRef = ref(db, 'todos/' + id);
   remove(taskRef);
@@ -28,15 +41,3 @@ export const editDescription = (id: string, description: string) => {
   update(taskRef, { description });
 };
 
-export const createTask = (title: string, date: string) => {
-  const dueDate = dates.toISO(date);
-  const tasksListRef = ref(db, 'todos/');
-  const newTaskRef = push(tasksListRef);
-  set(newTaskRef, {
-    title,
-    description: '',
-    isDone: false,
-    dueDate,
-    attachedFiles: [],
-  });
-};
